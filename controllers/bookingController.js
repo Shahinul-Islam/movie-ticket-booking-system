@@ -34,7 +34,7 @@ exports.createBooking = async (req, res) => {
 			showtime_id,
 			seats,
 			total_amount,
-			booking_status: "pending",
+			booking_status,
 		});
 
 		const newBooking = await booking.save();

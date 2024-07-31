@@ -1,14 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const bookingController = require("../controllers/bookingController");
-const authMiddleware = require("../middleware/auth");
+const auth = require("../middleware/auth");
+const isAdmin = require("../middleware/isadmin");
 
-router.post("/", authMiddleware, bookingController.createBooking);
-router.get("/:id", authMiddleware, bookingController.getBooking);
-router.get("/user/:userId", authMiddleware, bookingController.getUserBookings);
+router.post("/", auth, bookingController.createBooking);
+router.get("/:id", auth, bookingController.getBooking);
+router.get("/user/:userId", auth, bookingController.getUserBookings);
 router.patch(
 	"/:id/payment",
-	authMiddleware,
+	auth,
+	isAdmin,
 	bookingController.updateBookingPaymentStatus
 );
 
