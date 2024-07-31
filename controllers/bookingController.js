@@ -34,6 +34,7 @@ exports.createBooking = async (req, res) => {
 			showtime_id,
 			seats,
 			total_amount,
+			booking_status: "pending",
 		});
 
 		const newBooking = await booking.save();
@@ -94,5 +95,16 @@ exports.updateBookingPaymentStatus = async (req, res) => {
 		res.json(booking);
 	} catch (error) {
 		res.status(400).json({ message: error.message });
+	}
+};
+
+exports.deleteBooking = async (req, res) => {
+	try {
+		const booking = await Booking.findByIdAndDelete(req.params.id);
+		if (!booking) {
+			return res.status(404).json({ message: "Booking not found" });
+		}
+	} catch (error) {
+		res.status(500).json({ message: error.message });
 	}
 };

@@ -1,6 +1,6 @@
 const User = require("../models/user");
 const { generateToken } = require("../utils/token");
-
+const Booking = require("../models/booking");
 exports.register = async (req, res) => {
 	try {
 		const { username, email, password } = req.body;
@@ -115,48 +115,91 @@ exports.admin = async (req, res) => {
 
 	try {
 		switch (action) {
-			case "updatePaymentStatus":
-				// Update payment status
-				// Example: await Booking.findByIdAndUpdate(data.bookingId, { paymentStatus: data.status });
-				res.json({ message: "Payment status updated successfully" });
-				break;
+			case "updatePaymentStatus": {
+				const { bookingId, paymentStatus } = data;
 
-			case "confirmBooking":
-				// Confirm a booking
-				// Example: await Booking.findByIdAndUpdate(data.bookingId, { status: 'confirmed' });
-				res.json({ message: "Booking confirmed successfully" });
-				break;
+				// Validate paymentStatus
+				const booking = await Booking.findById(bookingId);
+				if (!booking) {
+					return res.status(404).json({ message: "Booking not found" });
+				}
 
-			case "addMovie":
+				booking.payment_status = paymentStatus;
+				await booking.save();
+
+				// If payment is now 'paid/completed', you might want to confirm the booking
+				if (
+					paymentStatus === "completed" &&
+					booking.booking_status !== "completed"
+				) {
+					booking.booking_status = "completed";
+					await booking.save();
+				}
+
+				// If payment is 'failed' or 'refunded', you might want to cancel the booking
+				if (paymentStatus === "failed") {
+					booking.booking_status = "cancelled";
+					await booking.save();
+
+					// Release the seats back to available
+					await Showtime.findByIdAndUpdate(booking.showtime_id, {
+						$addToSet: { availableSeats: { $each: booking.seats } },
+					});
+				}
+
+				res.json({
+					message: "Payment status updated successfully",
+					booking: {
+						id: booking._id,
+						paymentStatus: booking.payment_status,
+						status: booking.booking_status,
+					},
+				});
+				break;
+			}
+
+			case "addMovie": {
 				// Add a new movie
 				// const newMovie = new Movie(data);
 				// await newMovie.save();
 				res.json({ message: "Movie added successfully" });
 				break;
+			}
 
-			case "updateMovie":
+			case "updateMovie": {
 				// Update a movie
 				// Example: await Movie.findByIdAndUpdate(data.movieId, data.updates);
 				res.json({ message: "Movie updated successfully" });
 				break;
+			}
 
-			case "deleteMovie":
+			case "deleteMovie": {
 				// Delete a movie
 				// Example: await Movie.findByIdAndDelete(data.movieId);
 				res.json({ message: "Movie deleted successfully" });
 				break;
+			}
 
-			case "updateUserStatus":
-				// Update user status (e.g., activate, deactivate, upgrade to admin)
-				// Example: await User.findByIdAndUpdate(data.userId, { status: data.status });
+			case "updateUserStatus": {
+				const user = await User.findByIdAndUpdate(data.userId, data.updates);
+				if (!user) {
+					return res.status(404).json({ message: "User not found" });
+				}
+
+				// Update user status
+				user.isAdmin = data.updates.isAdmin;
+				await user.save();
+
 				res.json({ message: "User status updated successfully" });
 				break;
+			}
 
-			case "updateShowtime":
+			case "updateShowtime": {
 				// Update showtime
 				// Example: await Showtime.findByIdAndUpdate(data.showtimeId, data.updates);
 				res.json({ message: "Showtime updated successfully" });
 				break;
+			}
 
 			default:
 				res.status(400).json({ message: "Invalid admin action" });
