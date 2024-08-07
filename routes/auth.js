@@ -12,7 +12,7 @@ router.post("/create-first-admin", authController.createFirstAdmin);
 // route to create the first admin
 
 router.post("/create-admin", auth, authController.createAdmin);
-router.post("/admin", auth, isAdmin, authController.admin);
+// router.post("/admin", auth, isAdmin, (req, res) => res.json(req.user));
 router.post("/register", authController.register);
 router.post("/login", authController.login);
 router.get("/profile", auth, (req, res) => res.json(req.user));

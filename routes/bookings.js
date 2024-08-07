@@ -5,7 +5,7 @@ const auth = require("../middleware/auth");
 const isAdmin = require("../middleware/isadmin");
 
 router.post("/", auth, bookingController.createBooking);
-router.get("/:id", auth, bookingController.getBooking);
+router.get("/:id", auth,isAdmin, bookingController.getBooking);
 router.get("/user/:userId", auth, bookingController.getUserBookings);
 router.patch(
 	"/:id/payment",
@@ -13,5 +13,5 @@ router.patch(
 	isAdmin,
 	bookingController.updateBookingPaymentStatus
 );
-
+router.delete("/:id", auth, isAdmin, bookingController.deleteBooking);
 module.exports = router;

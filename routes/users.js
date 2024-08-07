@@ -15,7 +15,7 @@ const isAdmin = (req, res, next) => {
 };
 
 router.get("/", auth, isAdmin, userController.getAllUsers);
-router.get("/:id", auth, isAdmin, userController.getUser);
+router.get("/:id", auth, userController.getUser);
 router.patch("/:id", auth, isAdmin, userController.updateUser);
 router.delete("/:id", auth, isAdmin, userController.deleteUser);
 
