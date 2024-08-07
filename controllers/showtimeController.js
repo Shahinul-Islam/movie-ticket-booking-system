@@ -26,8 +26,7 @@ exports.getAllShowtimes = async (req, res) => {
 exports.getShowtime = async (req, res) => {
 	try {
 		const showtime = await Showtime.findById(req.params.id)
-			.populate("movie_id")
-			.populate("theater_id");
+			
 		if (!showtime) {
 			return res.status(404).json({ message: "Showtime not found" });
 		}
