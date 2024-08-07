@@ -48,13 +48,26 @@ exports.updateUser = async (req, res) => {
 	}
 
 	try {
-		const user = await User.findById(req.params.id);
-		if (!user) {
-			return res.status(404).json({ message: "User not found" });
-		}
-		updates.forEach((update) => (user[update] = req.body[update]));
-		await user.save();
-		res.json(user);
+		const userId = req.params.id;
+
+        // Check if the requested user ID matches the authenticated user's ID
+        if (userId !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Access denied. You can only update your own profile." });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        updates.forEach((update) => (user[update] = req.body[update]));
+        await user.save();
+        
+        // Remove password from the response
+        const userResponse = user.toObject();
+        delete userResponse.password;
+        
+        res.json(userResponse);
 	} catch (error) {
 		res.status(400).json({ message: error.message });
 	}
@@ -62,11 +75,18 @@ exports.updateUser = async (req, res) => {
 
 exports.deleteUser = async (req, res) => {
 	try {
-		const user = await User.findByIdAndDelete(req.params.id);
-		if (!user) {
-			return res.status(404).json({ message: "User not found" });
-		}
-		res.json({ message: "User deleted successfully" });
+		const userId = req.params.id;
+
+        // Check if the user is an admin or the owner of the profile
+        if (!req.user.isAdmin && userId !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Access denied. You can only delete your own profile or you must be an admin." });
+        }
+
+        const user = await User.findByIdAndDelete(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json({ message: "User deleted successfully" });
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 	}
