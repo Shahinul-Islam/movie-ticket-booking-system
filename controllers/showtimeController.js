@@ -1,4 +1,5 @@
 const Showtime = require("../models/showtime");
+const Theater = require("../models/theater")
 
 exports.createShowtime = async (req, res) => {
 	try {
@@ -14,7 +15,8 @@ exports.getAllShowtimes = async (req, res) => {
 	try {
 		const showtimes = await Showtime.find()
 			.populate("movie_id", "title")
-			.populate("theater_id", "name");
+			.populate("theater_id", "name")
+			.sort({ date: 1, start_time: 1 });
 		res.json(showtimes);
 	} catch (error) {
 		res.status(500).json({ message: error.message });
