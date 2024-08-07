@@ -66,7 +66,7 @@ exports.getShowtimesByMovie = async (req, res) => {
 	try {
 		const showtimes = await Showtime.find({
 			movie_id: req.params.movieId,
-		}).populate("theater_id", "name");
+		})
 		res.json(showtimes);
 	} catch (error) {
 		res.status(500).json({ message: error.message });
@@ -77,7 +77,7 @@ exports.getShowtimesByTheater = async (req, res) => {
 	try {
 		const showtimes = await Showtime.find({
 			theater_id: req.params.theaterId,
-		}).populate("movie_id", "title");
+		})
 		res.json(showtimes);
 	} catch (error) {
 		res.status(500).json({ message: error.message });
