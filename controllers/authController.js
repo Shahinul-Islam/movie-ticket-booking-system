@@ -31,34 +31,34 @@ exports.getProfile = async (req, res) => {
 	res.json(req.user);
 };
 
-exports.updateProfile = async (req, res) => {
-	const updates = Object.keys(req.body);
-	const allowedUpdates = ["username", "email", "password"];
-	const isValidOperation = updates.every((update) =>
-		allowedUpdates.includes(update)
-	);
+// exports.updateProfile = async (req, res) => {
+// 	const updates = Object.keys(req.body);
+// 	const allowedUpdates = ["username", "email", "password"];
+// 	const isValidOperation = updates.every((update) =>
+// 		allowedUpdates.includes(update)
+// 	);
 
-	if (!isValidOperation) {
-		return res.status(400).json({ message: "Invalid updates!" });
-	}
+// 	if (!isValidOperation) {
+// 		return res.status(400).json({ message: "Invalid updates!" });
+// 	}
 
-	try {
-		updates.forEach((update) => (req.user[update] = req.body[update]));
-		await req.user.save();
-		res.json(req.user);
-	} catch (error) {
-		res.status(400).json({ message: error.message });
-	}
-};
+// 	try {
+// 		updates.forEach((update) => (req.user[update] = req.body[update]));
+// 		await req.user.save();
+// 		res.json(req.user);
+// 	} catch (error) {
+// 		res.status(400).json({ message: error.message });
+// 	}
+// };
 
-exports.deleteProfile = async (req, res) => {
-	try {
-		await req.user.remove();
-		res.json({ message: "User deleted successfully" });
-	} catch (error) {
-		res.status(500).json({ message: error.message });
-	}
-};
+// exports.deleteProfile = async (req, res) => {
+// 	try {
+// 		await req.user.remove();
+// 		res.json({ message: "User deleted successfully" });
+// 	} catch (error) {
+// 		res.status(500).json({ message: error.message });
+// 	}
+// };
 
 exports.createAdmin = async (req, res) => {
 	try {
