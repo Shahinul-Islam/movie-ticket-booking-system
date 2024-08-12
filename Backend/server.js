@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const mongoose = require("mongoose");
+const cors = require('cors')
 
 const DB_USER = process.env.DB_USER;
 const DB_PASS = process.env.DB_PASS;
@@ -15,6 +16,7 @@ const showtimeRoutes = require("./routes/showtimes");
 // ... other route imports
 
 const app = express();
+app.use(cors())
 
 const uri = `mongodb+srv://${DB_USER}:${DB_PASS}@cluster0.8gymk77.mongodb.net/online_ticket_booking?retryWrites=true&w=majority&appName=Cluster0`;
 
